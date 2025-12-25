@@ -9,7 +9,7 @@ import Profile from "./pages/Profile";
 import Discover from "./pages/Discover";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
-import Chat from "./pages/Chat";
+import Chat from "./pages/chat";
 import LoginForm from "./components/auth/LoginForm";
 import MultiStepRegister from "./components/auth/MultiStepRegister";
 
