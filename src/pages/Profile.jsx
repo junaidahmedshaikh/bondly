@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { DashboardLayout } from "../components/dashboard/DashboardLayout";
-import { useAuth } from "../context/AuthContext";
+import { INTERESTS, BACKEND_BASE_URL } from "../utils/constant";
 import {
   Card,
   CardHeader,
@@ -11,38 +12,70 @@ import {
 } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-
-const INTERESTS = [
-  "Travel",
-  "Photography",
-  "Cooking",
-  "Music",
-  "Sports",
-  "Reading",
-  "Movies",
-  "Art",
-  "Dancing",
-  "Hiking",
-  "Gaming",
-  "Yoga",
-  "Technology",
-  "Fashion",
-  "Food",
-  "Fitness",
-  "Nature",
-  "Animals",
-];
+import toast from "react-hot-toast";
+import { updateUser } from "../store/slices/authSlice";
 
 const Profile = () => {
-  const { user, updateProfile } = useAuth();
+  const dispatch = useDispatch();
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    age: user?.age || "",
-    location: user?.location || "",
-    bio: user?.bio || "",
-    interests: user?.interests || [],
+    name: "",
+    age: "",
+    location: "",
+    bio: "",
+    interests: [],
   });
+
+  const fetchProfile = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`${BACKEND_BASE_URL}/profile`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch profile");
+      }
+
+      const data = await res.json();
+      setUser(data.user);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      toast.error("Failed to load profile");
+      // Fallback to Redux user if available
+      if (currentUser) {
+        setUser(currentUser);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentUser]);
+
+  // Fetch user profile on mount
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  // Update form data when user data changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user?.name || "",
+        age: user?.age || "",
+        location: user?.location || "",
+        bio: user?.bio || "",
+        interests: user?.interests || [],
+      });
+    }
+  }, [user]);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -57,9 +90,61 @@ const Profile = () => {
     }));
   };
 
-  const handleSave = () => {
-    updateProfile(formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    // Validation
+    if (!formData.name || !formData.name.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+
+    if (!formData.age || formData.age < 18 || formData.age > 100) {
+      toast.error("Please enter a valid age (18-100)");
+      return;
+    }
+
+    if (!formData.location || !formData.location.trim()) {
+      toast.error("Location is required");
+      return;
+    }
+
+    if (formData.bio && formData.bio.length > 50) {
+      toast.error("Bio must be 50 characters or less");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const res = await fetch(`${BACKEND_BASE_URL}/profile`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          age: Number(formData.age),
+          location: formData.location.trim(),
+          bio: formData.bio.trim(),
+          interests: formData.interests,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to update profile");
+      }
+
+      const data = await res.json();
+      setUser(data.user);
+      dispatch(updateUser(data.user));
+      setIsEditing(false);
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error(error.message || "Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -73,6 +158,32 @@ const Profile = () => {
     setIsEditing(false);
   };
 
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/diverse-user-avatars.png";
+    if (imagePath.startsWith("http")) return imagePath;
+    return `${BACKEND_BASE_URL}${imagePath}`;
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-96">
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!user) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-96">
+          <p className="text-gray-600">Failed to load profile</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto space-y-6">
@@ -82,13 +193,15 @@ const Profile = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
               <div className="relative">
                 <img
-                  src={user?.avatar || "/diverse-user-avatars.png"}
+                  src={getImageUrl(
+                    user?.profileImages?.[0] || user?.profileURL
+                  )}
                   alt={user?.name}
-                  className="w-32 h-32 rounded-full object-cover"
+                  className="w-32 h-32 rounded-full object-cover ring-4 ring-gray-200"
+                  onError={(e) => {
+                    e.target.src = "/diverse-user-avatars.png";
+                  }}
                 />
-                <button className="absolute bottom-0 right-0 bg-pink-500 text-white rounded-full p-2 hover:bg-pink-600">
-                  <span className="text-sm">📷</span>
-                </button>
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -99,19 +212,25 @@ const Profile = () => {
                   {user?.interests?.slice(0, 3).map((interest) => (
                     <span
                       key={interest}
-                      className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-medium"
+                      className="px-2.5 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-medium"
                     >
                       {interest}
                     </span>
                   ))}
                   {user?.interests?.length > 3 && (
-                    <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
+                    <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
                       +{user.interests.length - 3} more
                     </span>
                   )}
                 </div>
                 <Button
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={() => {
+                    if (isEditing) {
+                      handleCancel();
+                    } else {
+                      setIsEditing(true);
+                    }
+                  }}
                   className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
                 >
                   {isEditing ? "Cancel Edit" : "Edit Profile"}
@@ -232,10 +351,10 @@ const Profile = () => {
                     key={interest}
                     type="button"
                     onClick={() => toggleInterest(interest)}
-                    className={`px-3 py-2 text-xs rounded-full border transition-colors ${
+                    className={`px-3 py-2 text-xs rounded-full border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
                       formData.interests.includes(interest)
-                        ? "bg-pink-500 text-white border-pink-500"
-                        : "bg-white text-gray-700 border-gray-300 hover:border-pink-300"
+                        ? "bg-pink-500 text-white border-pink-500 shadow-sm"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-pink-300 hover:bg-pink-50"
                     }`}
                   >
                     {interest}
@@ -247,13 +366,15 @@ const Profile = () => {
                 {user?.interests?.map((interest) => (
                   <span
                     key={interest}
-                    className="px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-medium"
+                    className="px-2.5 py-1 bg-pink-100 text-pink-700 rounded-full text-sm font-medium"
                   >
                     {interest}
                   </span>
                 ))}
                 {(!user?.interests || user.interests.length === 0) && (
-                  <p className="text-gray-500">No interests added yet.</p>
+                  <p className="text-gray-500 text-sm">
+                    No interests added yet.
+                  </p>
                 )}
               </div>
             )}
@@ -268,9 +389,10 @@ const Profile = () => {
             </Button>
             <Button
               onClick={handleSave}
-              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
+              disabled={isSaving}
+              className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Save Changes
+              {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         )}

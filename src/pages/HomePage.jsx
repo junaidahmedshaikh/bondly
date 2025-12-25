@@ -1,39 +1,39 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+// import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { LoginForm } from "../components/auth/LoginForm";
-import { MultiStepRegister } from "../components/auth/MultiStepRegister";
+import LoginForm from "../components/auth/LoginForm";
+import MultiStepRegister from "../components/auth/MultiStepRegister";
 import { Button } from "../components/ui/Button";
 
 const HomePage = () => {
-  const { user, isLoading } = useAuth();
+  // const { user, isLoading } = useAuth();
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user && !isLoading) {
-      navigate("/dashboard");
-    }
-  }, [user, isLoading, navigate]);
+  // useEffect(() => {
+  //   if (user && !isLoading) {
+  //     navigate("/dashboard");
+  //   }
+  // }, [user, isLoading, navigate]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="h-12 w-12 text-pink-500 mx-auto mb-4 animate-pulse">
-            ❤️
-          </div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="h-12 w-12 text-pink-500 mx-auto mb-4 animate-pulse">
+  //           ❤️
+  //         </div>
+  //         <p className="text-gray-600">Loading...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (user) {
-    return null;
-  }
+  // if (user) {
+  //   return null;
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
@@ -46,7 +46,7 @@ const HomePage = () => {
               <span className="text-xl font-bold text-gray-900">Bondly</span>
             </div>
             <div className="hidden md:flex items-center space-x-6">
-              <a
+              {/* <a
                 href="#features"
                 className="text-gray-600 hover:text-pink-500 transition-colors"
               >
@@ -63,7 +63,7 @@ const HomePage = () => {
                 className="text-gray-600 hover:text-pink-500 transition-colors"
               >
                 Success Stories
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
@@ -125,6 +125,7 @@ const HomePage = () => {
                 </Button>
                 <Button
                   variant="outline"
+                  className="text-gray-900 bg-white/50 hover:bg-white/80 hover:text-gray-900"
                   size="lg"
                   onClick={() => setShowRegister(false)}
                 >
@@ -210,11 +211,11 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl lg:text-4xl font-bold mb-2">50K+</div>
+              <div className="text-3xl lg:text-4xl font-bold mb-2">5+</div>
               <div className="text-pink-100">Active Users</div>
             </div>
             <div>
-              <div className="text-3xl lg:text-4xl font-bold mb-2">12K+</div>
+              <div className="text-3xl lg:text-4xl font-bold mb-2">3+</div>
               <div className="text-pink-100">Success Stories</div>
             </div>
             <div>
@@ -238,8 +239,8 @@ const HomePage = () => {
               <span className="text-lg font-bold">Bondly</span>
             </div>
             <div className="text-sm text-gray-400">
-              © 2024 Bondly. All rights reserved. Made with ❤️ for meaningful
-              connections.
+              © {new Date().getFullYear()} Bondly. All rights reserved. Made
+              with ❤️ for meaningful connections.
             </div>
           </div>
         </div>

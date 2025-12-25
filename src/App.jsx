@@ -1,6 +1,8 @@
 "use client";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./context/AuthContext";
+import { useSelector } from "react-redux";
+import { Toaster } from "react-hot-toast";
+import AuthInitializer from "./components/AuthInitializer";
 import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
@@ -8,54 +10,67 @@ import Discover from "./pages/Discover";
 import Matches from "./pages/Matches";
 import Messages from "./pages/Messages";
 import Chat from "./pages/Chat";
+import LoginForm from "./components/auth/LoginForm";
+import MultiStepRegister from "./components/auth/MultiStepRegister";
 
 function App() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="h-12 w-12 text-pink-500 mx-auto mb-4 animate-pulse">
-            ❤️
-          </div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  // console.log(user);
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={user ? <Navigate to="/dashboard" replace /> : <HomePage />}
-      />
-      <Route
-        path="/dashboard"
-        element={user ? <Dashboard /> : <Navigate to="/" replace />}
-      />
-      <Route
-        path="/profile"
-        element={user ? <Profile /> : <Navigate to="/" replace />}
-      />
-      <Route
-        path="/discover"
-        element={user ? <Discover /> : <Navigate to="/" replace />}
-      />
-      <Route
-        path="/matches"
-        element={user ? <Matches /> : <Navigate to="/" replace />}
-      />
-      <Route
-        path="/messages"
-        element={user ? <Messages /> : <Navigate to="/" replace />}
-      />
-      <Route
-        path="/messages/:id"
-        element={user ? <Chat /> : <Navigate to="/" replace />}
-      />
-    </Routes>
+    <AuthInitializer>
+      <>
+        <Toaster position="top-right" />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Navigate to="/discover" replace /> : <HomePage />
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            !isAuthenticated ? (
+              <LoginForm />
+            ) : (
+              <Navigate to="/discover" replace />
+            )
+          }
+        />
+        <Route
+          path="/profile"
+          element={isAuthenticated ? <Profile /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/discover"
+          element={isAuthenticated ? <Discover /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/matches"
+          element={isAuthenticated ? <Matches /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/messages"
+          element={isAuthenticated ? <Messages /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/messages/:id"
+          element={isAuthenticated ? <Chat /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/chat/:conversationId"
+          element={isAuthenticated ? <Chat /> : <Navigate to="/" replace />}
+        />
+      </Routes>
+      </>
+    </AuthInitializer>
   );
 }
 

@@ -24,7 +24,7 @@ const MatchModal = ({ profile, onClose }) => {
             />
             <div className="text-2xl text-pink-500">❤️</div>
             <img
-              src={profile.photos[0] || "/placeholder.svg"}
+              src={profile.profileURL[0] || "/placeholder.svg"}
               alt={profile.name}
               className="w-16 h-16 rounded-full object-cover"
             />

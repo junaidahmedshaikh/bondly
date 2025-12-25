@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
+import { BACKEND_BASE_URL } from "../../utils/constant";
+import { useDispatch } from "react-redux";
+import { login } from "../../store/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = ({ onSwitchToRegister }) => {
   const [email, setEmail] = useState("");
@@ -12,8 +16,8 @@ const LoginForm = ({ onSwitchToRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const { login } = useAuth();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,16 +25,43 @@ const LoginForm = ({ onSwitchToRegister }) => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      const res = await fetch(`${BACKEND_BASE_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailId: email,
+          password,
+        }),
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.user) {
+        toast.success("Login successful!");
+        dispatch(login(data.user));
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+      } else {
+        const errorMsg = data.message || "Login failed. Please try again.";
+        setError(errorMsg);
+        toast.error(errorMsg);
+      }
     } catch (err) {
-      setError("Invalid email or password! ", err.message);
+      console.log(err);
+      const errorMsg = "Network error. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full bg-white/50 max-w-md mx-auto">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold text-gray-900">
           Welcome Back
@@ -39,11 +70,11 @@ const LoginForm = ({ onSwitchToRegister }) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
+          {/* {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
               {error}
             </div>
-          )}
+          )} */}
 
           <div className="space-y-2">
             <label
@@ -90,7 +121,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
+            className="w-full text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign In"}
@@ -113,4 +144,4 @@ const LoginForm = ({ onSwitchToRegister }) => {
   );
 };
 
-export { LoginForm };
+export default LoginForm;

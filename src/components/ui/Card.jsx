@@ -3,7 +3,7 @@ import { cn } from "../../utils/cn";
 const Card = ({ className, ...props }) => (
   <div
     className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
+      "rounded-lg border border-gray-200 bg-card text-card-foreground shadow-sm",
       className
     )}
     {...props}
