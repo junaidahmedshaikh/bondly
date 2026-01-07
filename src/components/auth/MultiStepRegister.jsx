@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
-import { INTERESTS, BACKEND_BASE_URL } from "../../utils/constant";
+import { INTERESTS, BACKEND_URL } from "../../utils/constant";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -138,7 +138,7 @@ const MultiStepRegister = ({ onSwitchToLogin }) => {
         formDataToSend.append("photos", photo.file);
       });
 
-      const res = await fetch(`${BACKEND_BASE_URL}/signup`, {
+      const res = await fetch(`${BACKEND_URL}/signup`, {
         method: "POST",
         body: formDataToSend,
         credentials: "include",

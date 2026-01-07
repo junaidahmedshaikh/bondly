@@ -5,7 +5,7 @@ import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { SwipeCard } from "../components/matching/SwipeCard";
 import { MatchModal } from "../components/matching/MatchModel";
 import { Button } from "../components/ui/Button";
-import { BACKEND_BASE_URL } from "../utils/constant";
+import { BACKEND_URL } from "../utils/constant";
 import { useSelector } from "react-redux";
 
 const Discover = () => {
@@ -18,7 +18,7 @@ const Discover = () => {
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      const res = await fetch(`${BACKEND_BASE_URL}/discover`, {
+      const res = await fetch(`${BACKEND_URL}/discover`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -48,7 +48,7 @@ const Discover = () => {
     // console.log("Liked profile:", profiles[0]);
     try {
       const res = await fetch(
-        `${BACKEND_BASE_URL}/request/send/interested/${profiles[currentIndex]?._id}`,
+        `${BACKEND_URL}/request/send/interested/${profiles[currentIndex]?._id}`,
         {
           method: "POST",
           credentials: "include",

@@ -5,7 +5,7 @@ import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { Card, CardContent } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
 import { useNavigate } from "react-router-dom";
-import { BACKEND_BASE_URL } from "../utils/constant";
+import { BACKEND_URL } from "../utils/constant";
 
 const Messages = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,7 +23,7 @@ const Messages = () => {
   const fetchConversations = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${BACKEND_BASE_URL}/conversation/all`, {
+      const res = await fetch(`${BACKEND_URL}/conversation/all`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -52,7 +52,7 @@ const Messages = () => {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/placeholder.svg";
     if (imagePath.startsWith("http")) return imagePath;
-    return `${BACKEND_BASE_URL}${imagePath}`;
+    return `${BACKEND_URL}${imagePath}`;
   };
 
   /**

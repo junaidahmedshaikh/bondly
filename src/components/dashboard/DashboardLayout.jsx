@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { AVATAR_URL, navItems, BACKEND_BASE_URL } from "../../utils/constant";
+import { AVATAR_URL, navItems, BACKEND_URL } from "../../utils/constant";
 import { logout } from "../../store/slices/authSlice";
 
 const DashboardLayout = ({ children }) => {
@@ -22,7 +22,7 @@ const DashboardLayout = ({ children }) => {
     if (!imagePath) return AVATAR_URL;
     // If it's a relative path, prepend the backend URL
     if (imagePath.startsWith("/")) {
-      return `${BACKEND_BASE_URL}${imagePath}`;
+      return `${BACKEND_URL}${imagePath}`;
     }
     return imagePath;
   };

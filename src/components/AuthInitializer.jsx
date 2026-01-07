@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { restoreAuth, logout } from "../store/slices/authSlice";
-import { BACKEND_BASE_URL } from "../utils/constant";
+import { BACKEND_URL } from "../utils/constant";
 
 const AuthInitializer = ({ children }) => {
   const dispatch = useDispatch();
@@ -11,7 +11,7 @@ const AuthInitializer = ({ children }) => {
     const verifyAuth = async () => {
       if (isAuthenticated) {
         try {
-          const res = await fetch(`${BACKEND_BASE_URL}/verify-token`, {
+          const res = await fetch(`${BACKEND_URL}/verify-token`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",

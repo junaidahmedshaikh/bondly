@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "../ui/Card";
-import { BACKEND_BASE_URL } from "../../utils/constant";
+import { BACKEND_URL } from "../../utils/constant";
 
 const SwipeCard = ({ profile, onSwipe }) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -17,7 +17,7 @@ const SwipeCard = ({ profile, onSwipe }) => {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/placeholder.svg";
     if (imagePath.startsWith("/")) {
-      return `${BACKEND_BASE_URL}${imagePath}`;
+      return `${BACKEND_URL}${imagePath}`;
     }
     return imagePath;
   };

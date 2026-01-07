@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
-import { BACKEND_BASE_URL } from "../../utils/constant";
+import { BACKEND_URL } from "../../utils/constant";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +25,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${BACKEND_BASE_URL}/login`, {
+      const res = await fetch(`${BACKEND_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

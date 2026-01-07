@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DashboardLayout } from "../components/dashboard/DashboardLayout";
-import { INTERESTS, BACKEND_BASE_URL } from "../utils/constant";
+import { INTERESTS, BACKEND_URL } from "../utils/constant";
 import {
   Card,
   CardHeader,
@@ -33,7 +33,7 @@ const Profile = () => {
   const fetchProfile = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await fetch(`${BACKEND_BASE_URL}/profile`, {
+      const res = await fetch(`${BACKEND_URL}/profile`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -114,7 +114,7 @@ const Profile = () => {
 
     try {
       setIsSaving(true);
-      const res = await fetch(`${BACKEND_BASE_URL}/profile`, {
+      const res = await fetch(`${BACKEND_URL}/profile`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -161,7 +161,7 @@ const Profile = () => {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/diverse-user-avatars.png";
     if (imagePath.startsWith("http")) return imagePath;
-    return `${BACKEND_BASE_URL}${imagePath}`;
+    return `${BACKEND_URL}${imagePath}`;
   };
 
   if (isLoading) {

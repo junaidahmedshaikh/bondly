@@ -8,7 +8,7 @@ import { UserProfileModal } from "../components/chat/UserProfileModal";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { useSelector } from "react-redux";
-import { BACKEND_BASE_URL } from "../utils/constant";
+import { BACKEND_URL } from "../utils/constant";
 import toast from "react-hot-toast";
 
 const Chat = () => {
@@ -53,7 +53,7 @@ const Chat = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${BACKEND_BASE_URL}/conversation/${chatId}/messages`,
+        `${BACKEND_URL}/conversation/${chatId}/messages`,
         {
           method: "GET",
           credentials: "include",
@@ -96,7 +96,7 @@ const Chat = () => {
    */
   const markMessagesAsRead = async () => {
     try {
-      await fetch(`${BACKEND_BASE_URL}/message/${chatId}/mark-read`, {
+      await fetch(`${BACKEND_URL}/message/${chatId}/mark-read`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -121,7 +121,7 @@ const Chat = () => {
     try {
       setSending(true);
 
-      const res = await fetch(`${BACKEND_BASE_URL}/message/send`, {
+      const res = await fetch(`${BACKEND_URL}/message/send`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -164,7 +164,7 @@ const Chat = () => {
     if (!window.confirm("Delete this message?")) return;
 
     try {
-      const res = await fetch(`${BACKEND_BASE_URL}/message/${messageId}`, {
+      const res = await fetch(`${BACKEND_URL}/message/${messageId}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
@@ -198,7 +198,7 @@ const Chat = () => {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/placeholder.svg";
     if (imagePath.startsWith("http")) return imagePath;
-    return `${BACKEND_BASE_URL}${imagePath}`;
+    return `${BACKEND_URL}${imagePath}`;
   };
 
   /**

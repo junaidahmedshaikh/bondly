@@ -5,7 +5,7 @@ import { DashboardLayout } from "../components/dashboard/DashboardLayout";
 import { Card, CardContent } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
-import { BACKEND_BASE_URL } from "../utils/constant";
+import { BACKEND_URL } from "../utils/constant";
 
 const Matches = () => {
   const [activeTab, setActiveTab] = useState("matches");
@@ -16,14 +16,14 @@ const Matches = () => {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/placeholder.svg";
     if (imagePath.startsWith("http")) return imagePath;
-    return `${BACKEND_BASE_URL}${imagePath}`;
+    return `${BACKEND_URL}${imagePath}`;
   };
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${BACKEND_BASE_URL}/request/received`, {
+        const res = await fetch(`${BACKEND_URL}/request/received`, {
           credentials: "include",
         });
         const data = await res.json();
@@ -51,7 +51,7 @@ const Matches = () => {
 
       // Initiate conversation
       const res = await fetch(
-        `${BACKEND_BASE_URL}/conversation/initiate/${userId}`,
+        `${BACKEND_URL}/conversation/initiate/${userId}`,
         {
           method: "POST",
           credentials: "include",
@@ -81,7 +81,7 @@ const Matches = () => {
   const handleLikeBack = async (requestId) => {
     try {
       const res = await fetch(
-        `${BACKEND_BASE_URL}/request/respond/${requestId}/accept`,
+        `${BACKEND_URL}/request/respond/${requestId}/accept`,
         {
           method: "POST",
           credentials: "include",
@@ -109,7 +109,7 @@ const Matches = () => {
   const handlePass = async (requestId) => {
     try {
       const res = await fetch(
-        `${BACKEND_BASE_URL}/request/respond/${requestId}/reject`,
+        `${BACKEND_URL}/request/respond/${requestId}/reject`,
         {
           method: "POST",
           credentials: "include",

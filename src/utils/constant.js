@@ -1,4 +1,4 @@
-export const BACKEND_BASE_URL = "https://bondly-backend-g4q7.onrender.com";
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const INTERESTS = [
   "Travel",

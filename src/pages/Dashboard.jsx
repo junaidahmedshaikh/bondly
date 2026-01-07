@@ -10,7 +10,7 @@ import {
 } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
-import { BACKEND_BASE_URL } from "../utils/constant";
+import { BACKEND_URL } from "../utils/constant";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
@@ -34,7 +34,7 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${BACKEND_BASE_URL}/dashboard`, {
+      const res = await fetch(`${BACKEND_URL}/dashboard`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -81,14 +81,14 @@ const Dashboard = () => {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/diverse-user-avatars.png";
     if (imagePath.startsWith("http")) return imagePath;
-    return `${BACKEND_BASE_URL}${imagePath}`;
+    return `${BACKEND_URL}${imagePath}`;
   };
 
   const handleMessageClick = async (matchId) => {
     try {
       // Navigate to initiate conversation or existing chat
       const res = await fetch(
-        `${BACKEND_BASE_URL}/conversation/initiate/${matchId}`,
+        `${BACKEND_URL}/conversation/initiate/${matchId}`,
         {
           method: "POST",
           credentials: "include",

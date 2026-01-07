@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
-import { BACKEND_BASE_URL } from "../../utils/constant";
+import { BACKEND_URL } from "../../utils/constant";
 import toast from "react-hot-toast";
 
 const UserProfileModal = ({ userId, onClose }) => {
@@ -15,7 +15,7 @@ const UserProfileModal = ({ userId, onClose }) => {
 
     try {
       setLoading(true);
-      const res = await fetch(`${BACKEND_BASE_URL}/profile/${userId}`, {
+      const res = await fetch(`${BACKEND_URL}/profile/${userId}`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -44,7 +44,7 @@ const UserProfileModal = ({ userId, onClose }) => {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/diverse-user-avatars.png";
     if (imagePath.startsWith("http")) return imagePath;
-    return `${BACKEND_BASE_URL}${imagePath}`;
+    return `${BACKEND_URL}${imagePath}`;
   };
 
   if (loading) {
